@@ -1,0 +1,34 @@
+{
+  "name": "matrix-log.js",
+  "version": "1.0.0",
+  "description": "A matrix log dependency utility. Useful for converting and testing algorithm behavior of CPU code to GPU code.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --env=node"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gpujs/matrix-log.js.git"
+  },
+  "keywords": [
+    "GPU",
+    "matrix",
+    "log",
+    "CPU",
+    "conversion",
+    "raytrace",
+    "ray-trace",
+    "ray-cast",
+    "raycast",
+    "gpu.js"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gpujs/matrix-log.js/issues"
+  },
+  "homepage": "https://github.com/gpujs/matrix-log.js#readme",
+  "devDependencies": {
+    "jest": "^23.5.0"
+  }
+}
