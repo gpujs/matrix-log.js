@@ -150,7 +150,7 @@ width=2,height=2                    width=4,height=4
                                     [ ][ ][*][*]
 ```
 
-3. Now we have enough logic to visibly see how to build out our algorythm that will work on the GPU.  For `filters`@`x=0,y=0` we can see we need the values from `weights`@`x=0,y=0`,`x=1,y=0`,`x=0,y=1`, and `x=1,y=1`. Then to get `filters`@`x=1,y=0`, we seem to increment by to on `weights`.  If we were to write a loop that emilates this behaviour, it'd look something like this:
+3. Now we have enough logic to visibly see how to build out our algorythm that will work on the GPU.  For `filters`@`x=0,y=0` we can see we need the values from `weights`@`x=0,y=0`,`x=1,y=0`,`x=0,y=1`, and `x=1,y=1`. Then to get `filters`@`x=1,y=0`, we seem to increment by two on `weights`.  If we were to write a loop that emilates this behaviour, it'd look something like this:
 
 ```js
 const filterHeight = 2;
