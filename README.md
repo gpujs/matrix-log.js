@@ -16,19 +16,31 @@ import * as MatrixLog from 'matrix-log';
 
 
 // create a matrix log that will have dependencies called
-const matrixLog =  new MatrixLog(parentMatrixName, width, height);
+const matrixLog =  new MatrixLog(parentMatrixName, width, height, depth); //depth is optional
 
+matrixLog.at({
+  x: parentX,
+  y: parentY,
+  z: parentZ  // optional
+});
 
 // in your algorithm, perhaps many times
-matrixLog.add(childMatrixName, parentX, parentY, childX, childY, childWidth, childHeight);
+matrixLog.add({
+  name: childMatrixName,
+  x: childX,
+  y: childY,
+  z: childZ,  // optional
+  width: childWidth,
+  height: childHeight,
+  depth: childDepth // optional
+});
 
 
 // after your algorithm
 const childMatrixLog = matrixLog.toString(childMatrixName); 
 ```
 
-
-## What does a log (output of `.toString(string)`) look like?
+## What does a 2d log (output of `.toString(string)`) look like?
 
 ```
 test-matrix x=0,y=0                 child-matrix
@@ -87,7 +99,7 @@ for (let y = 0; y < 4; y++) {
 console.log(filters); // -> [ [ 14, 22 ], [ 46, 54 ] ]
 ```
 
-This code doesn't directly work on the GPU, because we can only _either_ read or write to arrays.  Currently `filters` violates this.  However, we could use MatrixLog to _help us_ (note, there is a little thinking that needs to take place) solve this issue by finding the algorithm that `filters` needs.
+This code doesn't directly work on the GPU, because we can only _either_ read or write to arrays there.  Currently `filters` violates this.  However, we could use MatrixLog to _help us_ (note, there is a little thinking that needs to take place) solve this issue by finding the algorithm that `filters` needs.
 
 2. Convert the code as follows and see the output below:
 ```js
@@ -110,7 +122,8 @@ for (let y = 0; y < 4; y++) {
   for (let x = 0; x < 4; x++) {
     let filterX = x < filter.length ? 0 : 1;
     filters[filterY][filterX] += weights[y][x];
-    matrixLog.add('weights', filterX, filterY, x, y, weights[0].length, weights.length);
+    matrixLog
+      .add('weights', filterX, filterY, x, y, weights[0].length, weights.length);
   }
 }
 
