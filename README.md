@@ -4,9 +4,11 @@ A matrix log dependency utility. Useful for converting and testing algorithm beh
 
 ## Why?
 GPU Principle: Your can only _write to_ or _read from_ Arrays (Textures).
-CPU Principle: You can read or right to arrays as you see fit.
 
-CPU Problem: Sometimes you'd like to convert your CPU code to GPU code.
+CPU Principle: You can read or write to arrays _as you see fit_.
+
+GPU Problem: Sometimes you'd like to convert your CPU code to GPU code.
+
 By strategically using MatrixLog as a logger in your CPU algorithms, you can see which points are dependent from your source arrays to your target arrays.
 This makes converting CPU code to run on GPU, using a utility like [GPU.js](http://gpu.rocks), much easier.
 
@@ -161,7 +163,7 @@ width=2,height=2                    width=4,height=4
                                     [ ][ ][*][*]
 ```
 
-3. Now we have enough logic to visibly see how to build out our algorythm that will work on the GPU.  For `filters`@`x=0,y=0` we can see we need the values from `weights`@`x=0,y=0`,`x=1,y=0`,`x=0,y=1`, and `x=1,y=1`. Then to get `filters`@`x=1,y=0`, we seem to increment by to on `weights`.  If we were to write a loop that emilates this behaviour, it'd look something like this:
+3. Now we have enough logic to visibly see how to build out our algorythm that will work on the GPU.  For `filters`@`x=0,y=0` we can see we need the values from `weights`@`x=0,y=0`,`x=1,y=0`,`x=0,y=1`, and `x=1,y=1`. Then to get `filters`@`x=1,y=0`, we seem to increment by two on `weights`.  If we were to write a loop that emilates this behaviour, it'd look something like this:
 
 ```js
 const filterHeight = 2;
