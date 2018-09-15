@@ -20,14 +20,13 @@ import * as MatrixLog from 'matrix-log';
 // create a matrix log that will have dependencies called
 const matrixLog =  new MatrixLog(parentMatrixName, width, height, depth); //depth is optional
 
+// in your algorithm, perhaps many times
 matrixLog.at({
   x: parentX,
   y: parentY,
   z: parentZ  // optional
-});
-
-// in your algorithm, perhaps many times
-matrixLog.add({
+})
+.add({
   name: childMatrixName,
   x: childX,
   y: childY,
@@ -125,7 +124,14 @@ for (let y = 0; y < 4; y++) {
     let filterX = x < filter.length ? 0 : 1;
     filters[filterY][filterX] += weights[y][x];
     matrixLog
-      .add('weights', filterX, filterY, x, y, weights[0].length, weights.length);
+      .at({ x, y })
+      .add({
+        name: 'weights',
+        x: filterX,
+        y: filterY,
+        width: weights[0].length,
+        height: weights.length
+      });
   }
 }
 
