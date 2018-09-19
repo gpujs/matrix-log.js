@@ -3,7 +3,7 @@ const MatrixLog = require('../index');
 describe('MatrixLog', () => {
   describe('2d', () => {
     describe('.add()', () => {
-      test('can work on a smaller than parent pattern', () => {
+      it('can work on a smaller than parent pattern', () => {
         const x = 0;
         const y = 0;
         const z = 0;
@@ -24,7 +24,7 @@ describe('MatrixLog', () => {
       });
     });
     describe('.toString()', () => {
-      test('repeats for every point logged', () => {
+      it('repeats for every point logged', () => {
         const matrixLog = new MatrixLog('test-matrix', 2, 1);
 
         matrixLog.at({ x: 0, y: 0 })
@@ -361,87 +361,172 @@ describe('MatrixLog', () => {
       });
     });
     describe('.toString()', () => {
-      describe('parent of 2x2, pattern 4,4', () => {
-        test('0,0', () => {
-          const matrixLog = new MatrixLog('test-matrix', 2, 2);
-          matrixLog.at({ x: 0, y: 0 })
-            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
-            .add({ name: 'child-matrix', x: 0, y: 1, width: 4, height: 4 })
-            .add({ name: 'child-matrix', x: 1, y: 0, width: 4, height: 4 })
-            .add({ name: 'child-matrix', x: 1, y: 1, width: 4, height: 4 });
+      describe('parent of 2x2x3, pattern 4,4,4', () => {
+        test('0,0,', () => {
+          const matrixLog = new MatrixLog('test-matrix', 2, 2, 3);
+          matrixLog.at({ x: 0, y: 0, z: 2 })
+            .add({ name: 'child-matrix', x: 0, y: 0, z: 3, width: 4, height: 4, depth: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 1, z: 3, width: 4, height: 4, depth: 4 })
+            .add({ name: 'child-matrix', x: 1, y: 0, z: 3, width: 4, height: 4, depth: 4 })
+            .add({ name: 'child-matrix', x: 1, y: 1, z: 3, width: 4, height: 4, depth: 4 });
 
           console.log(matrixLog.toString('child-matrix'));
 
           const lines = matrixLog.toString('child-matrix').split(/\n/);
-          expect(lines.length).toBe(7);
-          expect(lines[0]).toBe('test-matrix x=0,y=0                 child-matrix');
-          expect(lines[1]).toBe('width=2,height=2                    width=4,height=4');
-          expect(lines[2]).toBe('[*][ ]                              [*][*][ ][ ]');
-          expect(lines[3]).toBe('[ ][ ]                              [*][*][ ][ ]');
-          expect(lines[4]).toBe('                                    [ ][ ][ ][ ]');
-          expect(lines[5]).toBe('                                    [ ][ ][ ][ ]');
-          expect(lines[6]).toBe('');
+          expect(lines.length).toBe(12);
+          expect(lines[0]).toBe('test-matrix x=0,y=0,z=2                     child-matrix');
+          expect(lines[1]).toBe('width=2,height=2,depth=3                    width=4,height=4,depth=4');
+          expect(lines[2]).toBe('[ ][ ]  [ ][ ]                              [ ][ ][ ][ ]  [ ][ ][ ][ ]');
+          expect(lines[3]).toBe('[ ][ ]  [ ][ ]                              [ ][ ][ ][ ]  [ ][ ][ ][ ]');
+          expect(lines[4]).toBe('                                            [ ][ ][ ][ ]  [ ][ ][ ][ ]');
+          expect(lines[5]).toBe('[*][ ]                                      [ ][ ][ ][ ]  [ ][ ][ ][ ]');
+          expect(lines[6]).toBe('[ ][ ]                                                                ');
+          expect(lines[7]).toBe('                                            [ ][ ][ ][ ]  [*][*][ ][ ]');
+          expect(lines[8]).toBe('                                            [ ][ ][ ][ ]  [*][*][ ][ ]');
+          expect(lines[9]).toBe('                                            [ ][ ][ ][ ]  [ ][ ][ ][ ]');
+          expect(lines[10]).toBe('                                            [ ][ ][ ][ ]  [ ][ ][ ][ ]');
+          expect(lines[11]).toBe('');
         });
+      });
+    });
+  });
+  describe('.getChildLog()', () => {
+    test('4,4,4', () => {
+      const matrixLog = new MatrixLog('parent', 4, 4, 4);
+      matrixLog.at({ x: 0, y: 0, z: 0 });
+      matrixLog.add({
+        name: 'child',
+        x: 0,
+        y: 0,
+        z: 0,
+        width: 4,
+        height: 4,
+        depth: 4
+      });
+      matrixLog.add({
+        name: 'child',
+        x: 1,
+        y: 1,
+        z: 1,
+        width: 4,
+        height: 4,
+        depth: 4
+      });
+      matrixLog.add({
+        name: 'child',
+        x: 2,
+        y: 2,
+        z: 2,
+        width: 4,
+        height: 4,
+        depth: 4
+      });
+      matrixLog.add({
+        name: 'child',
+        x: 3,
+        y: 3,
+        z: 3,
+        width: 4,
+        height: 4,
+        depth: 4
+      });
 
-        test('1,0', () => {
-          const matrixLog = new MatrixLog('test-matrix', 2, 2);
-          matrixLog.at({ x: 1, y: 0 })
-            .add({ name: 'child-matrix', x: 2, y: 0, width: 4, height: 4 })
-            .add({ name: 'child-matrix', x: 3, y: 0, width: 4, height: 4 })
-            .add({ name: 'child-matrix', x: 2, y: 1, width: 4, height: 4 })
-            .add({ name: 'child-matrix', x: 3, y: 1, width: 4, height: 4 });
+      const matrices = matrixLog.getChildLog('child');
+      expect(matrices).toEqual([
+          ['[*][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]'],
+          ['[ ][ ][ ][ ]', '[ ][*][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]'],
+          ['[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][*][ ]', '[ ][ ][ ][ ]'],
+          ['[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][*]']
+        ]
+      );
+    });
+  });
+  describe('.getParentLog()', () => {
+    test('4,4,4', () => {
+      const matrixLog = new MatrixLog('parent', 4, 4, 4);
+      matrixLog.at({ x: 0, y: 0, z: 0 });
+      expect(matrixLog.getParentLog()).toEqual([
+          ['[*][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]'],
+          ['[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]'],
+          ['[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]'],
+          ['[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]']
+        ]
+      );
+      matrixLog.at({ x: 1, y: 1, z: 1 });
+      expect(matrixLog.getParentLog()).toEqual([
+          ['[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]'],
+          ['[ ][ ][ ][ ]', '[ ][*][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]'],
+          ['[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]'],
+          ['[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]']
+        ]
+      );
+      matrixLog.at({ x: 2, y: 2, z: 2 });
+      expect(matrixLog.getParentLog()).toEqual([
+          ['[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]'],
+          ['[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]'],
+          ['[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][*][ ]', '[ ][ ][ ][ ]'],
+          ['[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]']
+        ]
+      );
+      matrixLog.at({ x: 3, y: 3, z: 3 });
+      expect(matrixLog.getParentLog()).toEqual([
+          ['[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]'],
+          ['[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]'],
+          ['[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]'],
+          ['[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][ ]', '[ ][ ][ ][*]']
+        ]
+      );
+    });
+  });
+  describe('.logToGrid()', () => {
+    test('4,4,4', () => {
+      const matrixLog = new MatrixLog('parent', 4, 4, 4);
+      expect(matrixLog.logToGrid([
+        ['[1][2][3][4]', '[5][6][7][8]', '[9][10][11][12]', '[13][14][15][16]'],
+        ['[17][18][19][20]', '[21][22][23][24]', '[25][26][27][28]', '[29][30][31][32]'],
+        ['[33][34][35][36]', '[37][38][39][40]', '[41][42][43][44]', '[45][46][47][48]'],
+        ['[49][50][51][52]', '[53][54][55][56]', '[57][58][59][60]', '[61][62][63][64]']
+      ], 4)).toEqual([
+          '[1][2][3][4]  [17][18][19][20]',
+          '[5][6][7][8]  [21][22][23][24]',
+          '[9][10][11][12]  [25][26][27][28]',
+          '[13][14][15][16]  [29][30][31][32]',
+          '                                  ',
+          '[33][34][35][36]  [49][50][51][52]',
+          '[37][38][39][40]  [53][54][55][56]',
+          '[41][42][43][44]  [57][58][59][60]',
+          '[45][46][47][48]  [61][62][63][64]'
+        ]
+      );
+    });
+    describe('.mergeGrids()', () => {
+      test('4,4,3', () => {
+        const matrixLog = new MatrixLog('parent', 4, 4, 3);
+        matrixLog.at({ x: 0, y: 0, z: 0 })
+          .add({
+            name: 'child',
+            x: 0,
+            y: 0,
+            z: 0,
+            width: 3,
+            height: 3,
+            depth: 3,
+          });
 
+        const parentGrid = matrixLog.logToGrid(matrixLog.getParentLog(), matrixLog.depth);
+        const childGrid = matrixLog.logToGrid(matrixLog.getChildLog('child'), matrixLog.location['child'].depth);
 
-          const lines = matrixLog.toString('child-matrix').split(/\n/);
-          expect(lines.length).toBe(7);
-          expect(lines[0]).toBe('test-matrix x=1,y=0                 child-matrix');
-          expect(lines[1]).toBe('width=2,height=2                    width=4,height=4');
-          expect(lines[2]).toBe('[ ][*]                              [ ][ ][*][*]');
-          expect(lines[3]).toBe('[ ][ ]                              [ ][ ][*][*]');
-          expect(lines[4]).toBe('                                    [ ][ ][ ][ ]');
-          expect(lines[5]).toBe('                                    [ ][ ][ ][ ]');
-          expect(lines[6]).toBe('');
-        });
-
-        test('0,1', () => {
-          const matrixLog = new MatrixLog('test-matrix', 2, 2);
-          matrixLog.at({ x: 0, y: 1 })
-            .add({ name: 'child-matrix', x: 0, y: 2, width: 4, height: 4 })
-            .add({ name: 'child-matrix', x: 1, y: 2, width: 4, height: 4 })
-            .add({ name: 'child-matrix', x: 0, y: 3, width: 4, height: 4 })
-            .add({ name: 'child-matrix', x: 1, y: 3, width: 4, height: 4 });
-
-          const lines = matrixLog.toString('child-matrix').split(/\n/);
-          expect(lines.length).toBe(7);
-          expect(lines[0]).toBe('test-matrix x=0,y=1                 child-matrix');
-          expect(lines[1]).toBe('width=2,height=2                    width=4,height=4');
-          expect(lines[2]).toBe('[ ][ ]                              [ ][ ][ ][ ]');
-          expect(lines[3]).toBe('[*][ ]                              [ ][ ][ ][ ]');
-          expect(lines[4]).toBe('                                    [*][*][ ][ ]');
-          expect(lines[5]).toBe('                                    [*][*][ ][ ]');
-          expect(lines[6]).toBe('');
-        });
-
-        test('1,1', () => {
-          const matrixLog = new MatrixLog('test-matrix', 2, 2);
-
-          matrixLog.at({ x: 1, y: 1 })
-            .add({ name: 'child-matrix', x: 2, y: 2, width: 4, height: 4 })
-            .add({ name: 'child-matrix', x: 3, y: 2, width: 4, height: 4 })
-            .add({ name: 'child-matrix', x: 2, y: 3, width: 4, height: 4 })
-            .add({ name: 'child-matrix', x: 3, y: 3, width: 4, height: 4 });
-
-
-          const lines = matrixLog.toString('child-matrix').split(/\n/);
-          expect(lines.length).toBe(7);
-          expect(lines[0]).toBe('test-matrix x=1,y=1                 child-matrix');
-          expect(lines[1]).toBe('width=2,height=2                    width=4,height=4');
-          expect(lines[2]).toBe('[ ][ ]                              [ ][ ][ ][ ]');
-          expect(lines[3]).toBe('[ ][*]                              [ ][ ][ ][ ]');
-          expect(lines[4]).toBe('                                    [ ][ ][*][*]');
-          expect(lines[5]).toBe('                                    [ ][ ][*][*]');
-          expect(lines[6]).toBe('');
-        });
+        expect(matrixLog.mergeGrids(parentGrid, childGrid)).toEqual([
+          '[*][ ][ ][ ]  [ ][ ][ ][ ]' + ' '.repeat(matrixLog.rowSpacing) + '[*][ ][ ]  [ ][ ][ ]',
+          '[ ][ ][ ][ ]  [ ][ ][ ][ ]' + ' '.repeat(matrixLog.rowSpacing) + '[ ][ ][ ]  [ ][ ][ ]',
+          '[ ][ ][ ][ ]  [ ][ ][ ][ ]' + ' '.repeat(matrixLog.rowSpacing) + '[ ][ ][ ]  [ ][ ][ ]',
+          '[ ][ ][ ][ ]  [ ][ ][ ][ ]' + ' '.repeat(matrixLog.rowSpacing) + '                    ',
+          '                          ' + ' '.repeat(matrixLog.rowSpacing) + '[ ][ ][ ]',
+          '[ ][ ][ ][ ]              ' + ' '.repeat(matrixLog.rowSpacing) + '[ ][ ][ ]',
+          '[ ][ ][ ][ ]              ' + ' '.repeat(matrixLog.rowSpacing) + '[ ][ ][ ]',
+          '[ ][ ][ ][ ]',
+          '[ ][ ][ ][ ]',
+        ]);
       });
     });
   });

@@ -74,6 +74,59 @@ width=2,height=2                    width=4,height=4
 
 ```
 
+## What does a 3d log (output of `.toString(string)`) look like?
+
+```
+test-matrix x=0,y=0,z=0                   child-matrix
+width=2,height=2,depth=3                  width=4,height=4,depth=2
+[*][ ]  [ ][ ]                            [*][*][ ][ ]
+[ ][ ]  [ ][ ]                            [*][*][ ][ ]
+                                          [ ][ ][ ][ ]
+[ ][ ]                                    [ ][ ][ ][ ]
+[ ][ ]
+                                          [ ][ ][ ][ ]
+                                          [ ][ ][ ][ ]
+                                          [ ][ ][ ][ ]
+                                          [ ][ ][ ][ ]
+
+test-matrix x=1,y=0,z=0                   child-matrix
+width=2,height=2,depth=3                  width=4,height=4,depth=2
+[ ][*]  [ ][ ]                            [ ][ ][*][*]
+[ ][ ]  [ ][ ]                            [ ][ ][*][*]
+                                          [ ][ ][ ][ ]
+[ ][ ]                                    [ ][ ][ ][ ]
+[ ][ ]
+                                          [ ][ ][ ][ ]
+                                          [ ][ ][ ][ ]
+                                          [ ][ ][ ][ ]
+                                          [ ][ ][ ][ ]
+
+test-matrix x=0,y=1,z=0                   child-matrix
+width=2,height=2,depth=3                  width=4,height=4,depth=2
+[ ][ ]  [ ][ ]                            [ ][ ][ ][ ]
+[*][ ]  [ ][ ]                            [ ][ ][ ][ ]
+                                          [*][*][ ][ ]
+[ ][ ]                                    [*][*][ ][ ]
+[ ][ ]
+                                          [ ][ ][ ][ ]
+                                          [ ][ ][ ][ ]
+                                          [ ][ ][ ][ ]
+                                          [ ][ ][ ][ ]
+
+test-matrix x=1,y=1,z=0                   child-matrix
+width=2,height=2,depth=3                  width=4,height=4,depth=2
+[ ][ ]  [ ][ ]                            [ ][ ][ ][ ]
+[ ][*]  [ ][ ]                            [ ][ ][ ][ ]
+                                          [ ][ ][*][*]
+[ ][ ]                                    [ ][ ][*][*]
+[ ][ ]
+                                          [ ][ ][ ][ ]
+                                          [ ][ ][ ][ ]
+                                          [ ][ ][ ][ ]
+                                          [ ][ ][ ][ ]
+// etc.
+```
+
 ## What does this log mean?
 1. Suppose we had a (contrived) block of CPU code we'd like to run on the GPU:
 ```js
