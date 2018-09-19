@@ -12,6 +12,11 @@ GPU Problem: Sometimes you'd like to convert your CPU code to GPU code.
 By strategically using MatrixLog as a logger in your CPU algorithms, you can see which points are dependent from your source arrays to your target arrays.
 This makes converting CPU code to run on GPU, using a utility like [GPU.js](http://gpu.rocks), much easier.
 
+Don't understand?
+1. Watch this video: https://www.youtube.com/watch?v=-P28LKWTzrI .
+2. Think of the Leonardo 2's cannons talking with each other to build up their values and how this violates the laws of physics.
+3. Have eureka moment.
+
 ## API
 ```js
 import * as MatrixLog from 'matrix-log';
