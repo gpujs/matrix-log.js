@@ -133,189 +133,190 @@ width=2,height=2,depth=3                  width=4,height=4,depth=2
 ```
 
 ## What does this log mean?
-If you prefer code to learn take a look at the [included example](example.js)
+If you prefer to learn by code rather than have step by step instructions take a look at (or run) the [included example](example.js)
+  * NOTE: the [included example](example.js) correlates to the following step by step instructions.
 1. Suppose we had a (contrived) block of CPU code we'd like to run on the GPU:
-```js
-const filters = [
-  [0,0],
-  [0,0]
-];
-
-const weights = [
-  [1,2,3,4],
-  [5,6,7,8],
-  [9,10,11,12],
-  [13,14,15,16]
-];
-
-for (let y = 0; y < 4; y++) {
-  let filterY = y < 2 ? 0 : 1;
-  for (let x = 0; x < 4; x++) {
-    let filterX = x < filter.length ? 0 : 1;
-    filters[filterY][filterX] += weights[y][x];
-  }
-}
-
-console.log(filters); // -> [ [ 14, 22 ], [ 46, 54 ] ]
-```
-
-This code doesn't directly work on the GPU, because we can only _either_ read or write to arrays there.  Currently `filters` violates this.  However, we could use MatrixLog to _help us_ (note, there is a little thinking that needs to take place) solve this issue by finding the algorithm that `filters` needs.
-
-2. Convert the code as follows and see the output below:
-```js
-const MatrixLog = require('./index');
-
-const filters = [
-  [0,0],
-  [0,0]
-];
-const weights = [
-  [1,2,3,4],
-  [5,6,7,8],
-  [9,10,11,12],
-  [13,14,15,16]
-];
-
-const matrixLog = new MatrixLog('filters', 2, 2);
-for (let y = 0; y < 4; y++) {
-  let filterY = y < 2 ? 0 : 1;
-  for (let x = 0; x < 4; x++) {
-    let filterX = x < filter.length ? 0 : 1;
-    filters[filterY][filterX] += weights[y][x];
-    matrixLog
-      .at({ x, y })
-      .add({
-        name: 'weights',
-        x: filterX,
-        y: filterY,
-        width: weights[0].length,
-        height: weights.length
-      });
-  }
-}
-
-console.log(matrixLog.toString('weights'));
-```
-
-Gives us the output:
-```
-filters x=0,y=0                     weights
-width=2,height=2                    width=4,height=4
-[*][ ]                              [*][*][ ][ ]
-[ ][ ]                              [*][*][ ][ ]
-                                    [ ][ ][ ][ ]
-                                    [ ][ ][ ][ ]
-
-filters x=1,y=0                     weights
-width=2,height=2                    width=4,height=4
-[ ][*]                              [ ][ ][*][*]
-[ ][ ]                              [ ][ ][*][*]
-                                    [ ][ ][ ][ ]
-                                    [ ][ ][ ][ ]
-
-filters x=0,y=1                     weights
-width=2,height=2                    width=4,height=4
-[ ][ ]                              [ ][ ][ ][ ]
-[*][ ]                              [ ][ ][ ][ ]
-                                    [*][*][ ][ ]
-                                    [*][*][ ][ ]
-
-filters x=1,y=1                     weights
-width=2,height=2                    width=4,height=4
-[ ][ ]                              [ ][ ][ ][ ]
-[ ][*]                              [ ][ ][ ][ ]
-                                    [ ][ ][*][*]
-                                    [ ][ ][*][*]
-```
-
-3. Now we have enough logic to visibly see how to build out our algorythm that will work on the GPU.
-For `filters`@`x=0,y=0` we can see we need the values from `weights`@`x=0,y=0`,`x=1,y=0`,`x=0,y=1`, and `x=1,y=1`.
-Then to get `filters`@`x=1,y=0`, we seem to increment by two on `weights`.
-If we were to write a loop that emulates this behaviour, it'd look something like this:
-
-```js
-const filterHeight = 2;
-const filterWidth = 2;
-
-for (let filterY = 0; filterY < filterHeight; filterY++) {
-  for (let filterX = 0; filterX < filterWidth; filterX++) {
-    // NOTE: += filters!
-    let sum = filters[filterY][filterX];
-
-    const yMin = filterHeight * filterY;
-    const yMax = yMin + filterHeight;
-    const xMin = filterWidth * filterX;
-    const xMax = xMin + filterWidth;
-
-    for (let y = yMin; y < yMax; y++) {
-      for (let x = xMin; x < xMax; x++) {
-        sum += weights[y][x];
+    ```js
+    const filters = [
+      [0,0],
+      [0,0]
+    ];
+    
+    const weights = [
+      [1,2,3,4],
+      [5,6,7,8],
+      [9,10,11,12],
+      [13,14,15,16]
+    ];
+    
+    for (let y = 0; y < 4; y++) {
+      let filterY = y < 2 ? 0 : 1;
+      for (let x = 0; x < 4; x++) {
+        let filterX = x < filter.length ? 0 : 1;
+        filters[filterY][filterX] += weights[y][x];
       }
     }
+    
+    console.log(filters); // -> [ [ 14, 22 ], [ 46, 54 ] ]
+    ```
+    
+    This code doesn't directly work on the GPU, because we can only _either_ read or write to arrays there.  Currently `filters` violates this.  However, we could use MatrixLog to _help us_ (note, there is a little thinking that needs to take place) solve this issue by finding the algorithm that `filters` needs.
 
-    // single assignment
-    filters[filterY][filterX] = sum;
-  }
-}
+2. Convert the code as follows and see the output below:
+    ```js
+    const MatrixLog = require('./index');
+    
+    const filters = [
+      [0,0],
+      [0,0]
+    ];
+    const weights = [
+      [1,2,3,4],
+      [5,6,7,8],
+      [9,10,11,12],
+      [13,14,15,16]
+    ];
+    
+    const matrixLog = new MatrixLog('filters', 2, 2);
+    for (let y = 0; y < 4; y++) {
+      let filterY = y < 2 ? 0 : 1;
+      for (let x = 0; x < 4; x++) {
+        let filterX = x < filter.length ? 0 : 1;
+        filters[filterY][filterX] += weights[y][x];
+        matrixLog
+          .at({ x, y })
+          .add({
+            name: 'weights',
+            x: filterX,
+            y: filterY,
+            width: weights[0].length,
+            height: weights.length
+          });
+      }
+    }
+    
+    console.log(matrixLog.toString('weights'));
+    ```
+    
+    Gives us the output:
+    ```
+    filters x=0,y=0                     weights
+    width=2,height=2                    width=4,height=4
+    [*][ ]                              [*][*][ ][ ]
+    [ ][ ]                              [*][*][ ][ ]
+                                        [ ][ ][ ][ ]
+                                        [ ][ ][ ][ ]
+    
+    filters x=1,y=0                     weights
+    width=2,height=2                    width=4,height=4
+    [ ][*]                              [ ][ ][*][*]
+    [ ][ ]                              [ ][ ][*][*]
+                                        [ ][ ][ ][ ]
+                                        [ ][ ][ ][ ]
+    
+    filters x=0,y=1                     weights
+    width=2,height=2                    width=4,height=4
+    [ ][ ]                              [ ][ ][ ][ ]
+    [*][ ]                              [ ][ ][ ][ ]
+                                        [*][*][ ][ ]
+                                        [*][*][ ][ ]
+    
+    filters x=1,y=1                     weights
+    width=2,height=2                    width=4,height=4
+    [ ][ ]                              [ ][ ][ ][ ]
+    [ ][*]                              [ ][ ][ ][ ]
+                                        [ ][ ][*][*]
+                                        [ ][ ][*][*]
+    ```
 
-console.log(filters); // -> [ [ 14, 22 ], [ 46, 54 ] ]
-```
+3. Now we have enough logic to visibly see how to build out our algorythm that will work on the GPU.
+    For `filters`@`x=0,y=0` we can see we need the values from `weights`@`x=0,y=0`,`x=1,y=0`,`x=0,y=1`, and `x=1,y=1`.
+    Then to get `filters`@`x=1,y=0`, we seem to increment by two on `weights`.
+    If we were to write a loop that emulates this behaviour, it'd look something like this:
+    
+    ```js
+    const filterHeight = 2;
+    const filterWidth = 2;
+    
+    for (let filterY = 0; filterY < filterHeight; filterY++) {
+      for (let filterX = 0; filterX < filterWidth; filterX++) {
+        // NOTE: += filters!
+        let sum = filters[filterY][filterX];
+    
+        const yMin = filterHeight * filterY;
+        const yMax = yMin + filterHeight;
+        const xMin = filterWidth * filterX;
+        const xMax = xMin + filterWidth;
+    
+        for (let y = yMin; y < yMax; y++) {
+          for (let x = xMin; x < xMax; x++) {
+            sum += weights[y][x];
+          }
+        }
+    
+        // single assignment
+        filters[filterY][filterX] = sum;
+      }
+    }
+    
+    console.log(filters); // -> [ [ 14, 22 ], [ 46, 54 ] ]
+    ```
 
 4. On the GPU we are writing from a kernel, which acts like the `filters` loop already, so we can omit that and pretend that the function will run in its own "fragment" (like iteration of the inner most loops for building the value).
-If that function was just simple Javascript that we imagined might work on a GPU kernel, it'd looks something like this:
-
-```js
-function filterKernel(filters, filterX, filterY, filterWidth, filterHeight, weights) {
-  // NOTE: += filters!
-  let sum = filters[filterY][filterX];
-
-  const yMin = filterHeight * filterY;
-  const yMax = yMin + filterHeight;
-  const xMin = filterWidth * filterX;
-  const xMax = xMin + filterWidth;
-
-  for (let y = yMin; y < yMax; y++) {
-    for (let x = xMin; x < xMax; x++) {
-      sum += weights[y][x];
+    If that function was just simple Javascript that we imagined might work on a GPU kernel, it'd looks something like this:
+    
+    ```js
+    function filterKernel(filters, filterX, filterY, filterWidth, filterHeight, weights) {
+      // NOTE: += filters!
+      let sum = filters[filterY][filterX];
+    
+      const yMin = filterHeight * filterY;
+      const yMax = yMin + filterHeight;
+      const xMin = filterWidth * filterX;
+      const xMax = xMin + filterWidth;
+    
+      for (let y = yMin; y < yMax; y++) {
+        for (let x = xMin; x < xMax; x++) {
+          sum += weights[y][x];
+        }
+      }
+    
+      return sum;
     }
-  }
-
-  return sum;
-}
-
-console.log(filterKernel(filters, 0, 0, 2, 2, weights)); // -> 14
-console.log(filterKernel(filters, 1, 0, 2, 2, weights)); // -> 22
-console.log(filterKernel(filters, 0, 1, 2, 2, weights)); // -> 46
-console.log(filterKernel(filters, 1, 1, 2, 2, weights)); // -> 54
-```
+    
+    console.log(filterKernel(filters, 0, 0, 2, 2, weights)); // -> 14
+    console.log(filterKernel(filters, 1, 0, 2, 2, weights)); // -> 22
+    console.log(filterKernel(filters, 0, 1, 2, 2, weights)); // -> 46
+    console.log(filterKernel(filters, 1, 1, 2, 2, weights)); // -> 54
+    ```
 
 5. If we use a GPU environment, such as GPU.js, we could then then convert the kernel so that our algorithm actually works for setting the value of `filters` like this:
-
-```js
-import GPU from 'gpu.js';
-const gpu = new GPU();
-
-const filterKernel = gpu.createKernel(function(filters, weights) {
-  let sum = filters[this.thread.y][this.thread.x];
-  
-  const yMin = this.output.y * this.thread.y;
-  const yMax = yMin + this.output.y;
-  const xMin = this.output.x * this.thread.x;
-  const xMax = xMin + this.output.x;
-
-  for (let y = yMin; y < yMax; y++) {
-    for (let x = xMin; x < xMax; x++) {
-      sum += weights[y][x];
-    }
-  }
-  return sum;
-}, {
-  output: [2, 2]
-});
-
-console.log(filterKernel(filters, weights));// -> [ [ 14, 22 ], [ 46, 54 ] ]
-```
+    
+    ```js
+    import GPU from 'gpu.js';
+    const gpu = new GPU();
+    
+    const filterKernel = gpu.createKernel(function(filters, weights) {
+      let sum = filters[this.thread.y][this.thread.x];
+      
+      const yMin = this.output.y * this.thread.y;
+      const yMax = yMin + this.output.y;
+      const xMin = this.output.x * this.thread.x;
+      const xMax = xMin + this.output.x;
+    
+      for (let y = yMin; y < yMax; y++) {
+        for (let x = xMin; x < xMax; x++) {
+          sum += weights[y][x];
+        }
+      }
+      return sum;
+    }, {
+      output: [2, 2]
+    });
+    
+    console.log(filterKernel(filters, weights));// -> [ [ 14, 22 ], [ 46, 54 ] ]
+    ```
 
 ## What benefits are there to using MatrixLog?
 1. Seeing is understanding
-2. Automated unit testing new GPU algorithm against already existing CPU code with an output that can be understood by humans. 
+2. Automated unit testing new GPU algorithm against already existing CPU code with an output that can be understood by mere mortals. 
