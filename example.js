@@ -9,11 +9,27 @@ const weights = [
 ];
 
 const targetValue = step1CPU();
-assert.deepStrictEqual(step2GPUStyleLoops(), targetValue);
-assert.deepStrictEqual(step3GPUStyleKernel(), targetValue);
-assert.deepStrictEqual(step4GPUKernel(), targetValue);
+assert.deepStrictEqual(step2CPUWithMatrixLog(), targetValue);
+assert.deepStrictEqual(step3GPUStyleLoops(), targetValue);
+assert.deepStrictEqual(step4GPUStyleKernel(), targetValue);
+assert.deepStrictEqual(step5GPUKernel(), targetValue);
 
 function step1CPU() {
+  const filters = [
+    [0,0],
+    [0,0]
+  ];
+  for (let y = 0; y < 4; y++) {
+    let filterY = y < 2 ? 0 : 1;
+    for (let x = 0; x < 4; x++) {
+      let filterX = x < 2 ? 0 : 1;
+      filters[filterY][filterX] += weights[y][x];
+    }
+  }
+  return filters;
+}
+
+function step2CPUWithMatrixLog() {
   const filters = [
     [0,0],
     [0,0]
@@ -50,7 +66,7 @@ function step1CPU() {
   return filters;
 }
 
-function step2GPUStyleLoops() {
+function step3GPUStyleLoops() {
   const filters = [
     [0,0],
     [0,0]
@@ -82,7 +98,7 @@ function step2GPUStyleLoops() {
   return filters;
 }
 
-function step3GPUStyleKernel() {
+function step4GPUStyleKernel() {
   const filters = [
     [0,0],
     [0,0]
@@ -113,7 +129,7 @@ function step3GPUStyleKernel() {
   return filters;
 }
 
-function step4GPUKernel() {
+function step5GPUKernel() {
   const filters = [
     [0,0],
     [0,0]

@@ -133,6 +133,7 @@ width=2,height=2,depth=3                  width=4,height=4,depth=2
 ```
 
 ## What does this log mean?
+If you prefer code to learn take a look at the [included example](example.js)
 1. Suppose we had a (contrived) block of CPU code we'd like to run on the GPU:
 ```js
 const filters = [
@@ -227,7 +228,10 @@ width=2,height=2                    width=4,height=4
                                     [ ][ ][*][*]
 ```
 
-3. Now we have enough logic to visibly see how to build out our algorythm that will work on the GPU.  For `filters`@`x=0,y=0` we can see we need the values from `weights`@`x=0,y=0`,`x=1,y=0`,`x=0,y=1`, and `x=1,y=1`. Then to get `filters`@`x=1,y=0`, we seem to increment by two on `weights`.  If we were to write a loop that emilates this behaviour, it'd look something like this:
+3. Now we have enough logic to visibly see how to build out our algorythm that will work on the GPU.
+For `filters`@`x=0,y=0` we can see we need the values from `weights`@`x=0,y=0`,`x=1,y=0`,`x=0,y=1`, and `x=1,y=1`.
+Then to get `filters`@`x=1,y=0`, we seem to increment by two on `weights`.
+If we were to write a loop that emulates this behaviour, it'd look something like this:
 
 ```js
 const filterHeight = 2;
@@ -257,7 +261,8 @@ for (let filterY = 0; filterY < filterHeight; filterY++) {
 console.log(filters); // -> [ [ 14, 22 ], [ 46, 54 ] ]
 ```
 
-4. On the GPU we are writing from a kernel, which acts like the `filters` loop already, so we can ommit that and pretend that the function will run in its own "fragment" (like iteration of the inner most loops for building the value).  If that function was just simple Javascript that we imagined might work on a GPU kernel, it'd looks something like this:
+4. On the GPU we are writing from a kernel, which acts like the `filters` loop already, so we can omit that and pretend that the function will run in its own "fragment" (like iteration of the inner most loops for building the value).
+If that function was just simple Javascript that we imagined might work on a GPU kernel, it'd looks something like this:
 
 ```js
 function filterKernel(filters, filterX, filterY, filterWidth, filterHeight, weights) {

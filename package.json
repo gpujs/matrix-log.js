@@ -1,6 +1,6 @@
 {
   "name": "matrix-log.js",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A matrix log dependency utility. Useful for converting and testing algorithm behavior of CPU code to GPU code.",
   "main": "index.js",
   "scripts": {
