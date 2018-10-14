@@ -64,25 +64,50 @@ class MatrixLog {
     const name = child.name;
     const x = child.x;
     const y = child.y;
-    const z  = child.z || 0;
+    const z = child.z || 0;
     const width = child.width;
     const height = child.height;
     const depth = child.depth || 1;
+    let location = this.location[name];
 
     if (!this.location[name]) {
-      const location = this.location[name] = {
+      location = this.location[name] = {
         width: width,
         height: height,
-        depth: depth
+        depth: depth,
+        points: {},
+        lowX: 0,
+        highX: width - 1,
+        lowY: 0,
+        highY: height - 1
       };
+
       for (let z = 0; z < depth; z++) {
-        location[z] = {};
+        location.points[z] = {};
         for (let y = 0; y < height; y++) {
-          location[z][y] = [];
+          location.points[z][y] = [];
         }
       }
     }
-    this.location[name][z][y].push(x);
+
+    const points = location.points;
+
+    // handle negative and positive
+    if (y < location.lowY) {
+      location.lowY = y;
+      points[z][y] = [];
+    } else if (y > location.highX) {
+      location.highY = y;
+      points[z][y] = [];
+    }
+
+    if (x < location.lowX) {
+      location.lowX = x;
+    } else if (x > location.highX) {
+      location.highX = x;
+    }
+
+    points[z][y].push(x);
     return this;
   }
 
@@ -135,6 +160,10 @@ class MatrixLog {
     return result.join('\n');
   }
 
+  /**
+   *
+   * @returns {string[]}
+   */
   getParentLog() {
     const log = [];
     for (let z = 0; z < this.depth; z++) {
@@ -150,16 +179,35 @@ class MatrixLog {
     }
     return log;
   }
+
+  /**
+   *
+   * @param childName
+   * @returns {string[]}
+   */
   getChildLog(childName) {
     const location = this.location[childName];
+    const points = location.points;
 
     const log = [];
     for (let z = 0; z < location.depth; z++) {
       const matrix = [];
-      for (let y = 0; y < location.height; y++) {
+      for (let y = location.lowY; y <= location.highY; y++) {
         const row = [];
-        for (let x = 0; x < location.width; x++) {
-          row.push(location[z][y].indexOf(x) > -1 ? '[*]' : '[ ]');
+        for (let x = location.lowX; x <= location.highX; x++) {
+          if (y < 0 || x < 0 || y >= location.height || x >= location.width) {
+            row.push(
+              points[z][y] && points[z][y].indexOf(x) > -1
+                ? MatrixLog.dependantPointOutString
+                : MatrixLog.pointOutString
+            );
+          } else {
+            row.push(
+              points[z][y].indexOf(x) > -1
+                ? MatrixLog.dependantPointInString
+                : MatrixLog.pointInString
+            );
+          }
         }
         matrix.push(row.join(''));
       }
@@ -167,6 +215,13 @@ class MatrixLog {
     }
     return log;
   }
+
+  /**
+   *
+   * @param log
+   * @param depth
+   * @returns {string[]}
+   */
   logToGrid(log, depth) {
     const gridWidth = Math.round(Math.sqrt(depth));
     const rows = [];
@@ -186,6 +241,13 @@ class MatrixLog {
     }
     return rows;
   }
+
+  /**
+   *
+   * @param gridLeft
+   * @param gridRight
+   * @returns {string[]}
+   */
   mergeGrids(gridLeft, gridRight) {
     let gridLeftRowIndex = 0;
     let gridRightRowIndex = 0;
@@ -208,5 +270,10 @@ class MatrixLog {
     return result;
   }
 }
+
+MatrixLog.dependantPointInString = '[*]';
+MatrixLog.pointInString = '[ ]';
+MatrixLog.dependantPointOutString = ' * ';
+MatrixLog.pointOutString = ' - ';
 
 module.exports = MatrixLog;
