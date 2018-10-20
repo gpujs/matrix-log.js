@@ -424,6 +424,174 @@ describe('MatrixLog', () => {
           expect(lines[10]).toBe('');
         });
       });
+      describe('child points used more than once in matrix', () => {
+        it('can track 2 points', () => {
+          const matrixLog = new MatrixLog('test-matrix', 2, 2);
+          matrixLog.at({ x: 0, y: 0 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 });
+
+          const lines = matrixLog.toString('child-matrix').split(/\n/);
+          expect(lines.length).toBe(7);
+          expect(lines[0]).toBe('test-matrix x=0,y=0                 child-matrix');
+          expect(lines[1]).toBe('width=2,height=2                    width=4,height=4');
+          expect(lines[2]).toBe('[*][ ]                              [2][ ][ ][ ]');
+          expect(lines[3]).toBe('[ ][ ]                              [ ][ ][ ][ ]');
+          expect(lines[4]).toBe('                                    [ ][ ][ ][ ]');
+          expect(lines[5]).toBe('                                    [ ][ ][ ][ ]');
+          expect(lines[6]).toBe('');
+        });
+        it('can track 5 points', () => {
+          const matrixLog = new MatrixLog('test-matrix', 2, 2);
+          matrixLog.at({ x: 0, y: 0 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 });
+
+          const lines = matrixLog.toString('child-matrix').split(/\n/);
+          expect(lines.length).toBe(7);
+          expect(lines[0]).toBe('test-matrix x=0,y=0                 child-matrix');
+          expect(lines[1]).toBe('width=2,height=2                    width=4,height=4');
+          expect(lines[2]).toBe('[*][ ]                              [5][ ][ ][ ]');
+          expect(lines[3]).toBe('[ ][ ]                              [ ][ ][ ][ ]');
+          expect(lines[4]).toBe('                                    [ ][ ][ ][ ]');
+          expect(lines[5]).toBe('                                    [ ][ ][ ][ ]');
+          expect(lines[6]).toBe('');
+        });
+        it('can track 9 points', () => {
+          const matrixLog = new MatrixLog('test-matrix', 2, 2);
+          matrixLog.at({ x: 0, y: 0 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 });
+
+          const lines = matrixLog.toString('child-matrix').split(/\n/);
+          expect(lines.length).toBe(7);
+          expect(lines[0]).toBe('test-matrix x=0,y=0                 child-matrix');
+          expect(lines[1]).toBe('width=2,height=2                    width=4,height=4');
+          expect(lines[2]).toBe('[*][ ]                              [9][ ][ ][ ]');
+          expect(lines[3]).toBe('[ ][ ]                              [ ][ ][ ][ ]');
+          expect(lines[4]).toBe('                                    [ ][ ][ ][ ]');
+          expect(lines[5]).toBe('                                    [ ][ ][ ][ ]');
+          expect(lines[6]).toBe('');
+        });
+        it('can track for more than 9 points', () => {
+          const matrixLog = new MatrixLog('test-matrix', 2, 2);
+          matrixLog.at({ x: 0, y: 0 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 0, y: 0, width: 4, height: 4 });
+
+          const lines = matrixLog.toString('child-matrix').split(/\n/);
+          expect(lines.length).toBe(7);
+          expect(lines[0]).toBe('test-matrix x=0,y=0                 child-matrix');
+          expect(lines[1]).toBe('width=2,height=2                    width=4,height=4');
+          expect(lines[2]).toBe('[*][ ]                              [+][ ][ ][ ]');
+          expect(lines[3]).toBe('[ ][ ]                              [ ][ ][ ][ ]');
+          expect(lines[4]).toBe('                                    [ ][ ][ ][ ]');
+          expect(lines[5]).toBe('                                    [ ][ ][ ][ ]');
+          expect(lines[6]).toBe('');
+        });
+      });
+      describe('child points used more than once out of matrix', () => {
+        it('can track 2 points', () => {
+          const matrixLog = new MatrixLog('test-matrix', 2, 2);
+          matrixLog.at({ x: 0, y: 0 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 });
+
+          const lines = matrixLog.toString('child-matrix').split(/\n/);
+          expect(lines.length).toBe(7);
+          expect(lines[0]).toBe('test-matrix x=0,y=0                 child-matrix');
+          expect(lines[1]).toBe('width=2,height=2                    width=4,height=4');
+          expect(lines[2]).toBe('[*][ ]                              [ ][ ][ ][ ] 2 ');
+          expect(lines[3]).toBe('[ ][ ]                              [ ][ ][ ][ ] - ');
+          expect(lines[4]).toBe('                                    [ ][ ][ ][ ] - ');
+          expect(lines[5]).toBe('                                    [ ][ ][ ][ ] - ');
+          expect(lines[6]).toBe('');
+        });
+        it('can track 5 points', () => {
+          const matrixLog = new MatrixLog('test-matrix', 2, 2);
+          matrixLog.at({ x: 0, y: 0 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 });
+
+          const lines = matrixLog.toString('child-matrix').split(/\n/);
+          expect(lines.length).toBe(7);
+          expect(lines[0]).toBe('test-matrix x=0,y=0                 child-matrix');
+          expect(lines[1]).toBe('width=2,height=2                    width=4,height=4');
+          expect(lines[2]).toBe('[*][ ]                              [ ][ ][ ][ ] 5 ');
+          expect(lines[3]).toBe('[ ][ ]                              [ ][ ][ ][ ] - ');
+          expect(lines[4]).toBe('                                    [ ][ ][ ][ ] - ');
+          expect(lines[5]).toBe('                                    [ ][ ][ ][ ] - ');
+          expect(lines[6]).toBe('');
+        });
+        it('can track 9 points', () => {
+          const matrixLog = new MatrixLog('test-matrix', 2, 2);
+          matrixLog.at({ x: 0, y: 0 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 });
+
+          const lines = matrixLog.toString('child-matrix').split(/\n/);
+          expect(lines.length).toBe(7);
+          expect(lines[0]).toBe('test-matrix x=0,y=0                 child-matrix');
+          expect(lines[1]).toBe('width=2,height=2                    width=4,height=4');
+          expect(lines[2]).toBe('[*][ ]                              [ ][ ][ ][ ] 9 ');
+          expect(lines[3]).toBe('[ ][ ]                              [ ][ ][ ][ ] - ');
+          expect(lines[4]).toBe('                                    [ ][ ][ ][ ] - ');
+          expect(lines[5]).toBe('                                    [ ][ ][ ][ ] - ');
+          expect(lines[6]).toBe('');
+        });
+        it('can track for more than 9 points', () => {
+          const matrixLog = new MatrixLog('test-matrix', 2, 2);
+          matrixLog.at({ x: 0, y: 0 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 })
+            .add({ name: 'child-matrix', x: 4, y: 0, width: 4, height: 4 });
+
+          const lines = matrixLog.toString('child-matrix').split(/\n/);
+          expect(lines.length).toBe(7);
+          expect(lines[0]).toBe('test-matrix x=0,y=0                 child-matrix');
+          expect(lines[1]).toBe('width=2,height=2                    width=4,height=4');
+          expect(lines[2]).toBe('[*][ ]                              [ ][ ][ ][ ] + ');
+          expect(lines[3]).toBe('[ ][ ]                              [ ][ ][ ][ ] - ');
+          expect(lines[4]).toBe('                                    [ ][ ][ ][ ] - ');
+          expect(lines[5]).toBe('                                    [ ][ ][ ][ ] - ');
+          expect(lines[6]).toBe('');
+        });
+      });
     });
   });
   describe('3d mode', () => {

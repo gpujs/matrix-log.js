@@ -196,17 +196,33 @@ class MatrixLog {
         const row = [];
         for (let x = location.lowX; x <= location.highX; x++) {
           if (y < 0 || x < 0 || y >= location.height || x >= location.width) {
-            row.push(
-              points[z][y] && points[z][y].indexOf(x) > -1
-                ? MatrixLog.dependantPointOutString
-                : MatrixLog.pointOutString
-            );
+            if (points[z][y]) {
+              const count = this.countInArray(points[z][y], x);
+              if (count === 1) {
+                row.push(MatrixLog.dependantPointOutString);
+              } else if (count > 1) {
+                const string = MatrixLog['dependantPointOutString' + count] || MatrixLog.dependantPointOutStringOften;
+                row.push(string);
+              } else {
+                row.push(MatrixLog.pointOutString);
+              }
+            } else {
+              row.push(MatrixLog.pointOutString);
+            }
           } else {
-            row.push(
-              points[z][y].indexOf(x) > -1
-                ? MatrixLog.dependantPointInString
-                : MatrixLog.pointInString
-            );
+            if (points[z][y]) {
+              const count = this.countInArray(points[z][y], x);
+              if (count === 1) {
+                row.push(MatrixLog.dependantPointInString);
+              } else if (count > 1) {
+                const string = MatrixLog['dependantPointInString' + count] || MatrixLog.dependantPointInStringOften;
+                row.push(string);
+              } else {
+                row.push(MatrixLog.pointInString);
+              }
+            } else {
+              row.push(MatrixLog.pointInString);
+            }
           }
         }
         matrix.push(row.join(''));
@@ -269,11 +285,40 @@ class MatrixLog {
     }
     return result;
   }
+
+  countInArray(array, value) {
+    let count = 0;
+    let start = 0;
+    while ((start = array.indexOf(value, start)) > -1) {
+      count++;
+      start++;
+    }
+    return count;
+  }
 }
 
-MatrixLog.dependantPointInString = '[*]';
 MatrixLog.pointInString = '[ ]';
-MatrixLog.dependantPointOutString = ' * ';
+MatrixLog.dependantPointInString = '[*]';
+MatrixLog.dependantPointInString2 = '[2]';
+MatrixLog.dependantPointInString3 = '[3]';
+MatrixLog.dependantPointInString4 = '[4]';
+MatrixLog.dependantPointInString5 = '[5]';
+MatrixLog.dependantPointInString6 = '[6]';
+MatrixLog.dependantPointInString7 = '[7]';
+MatrixLog.dependantPointInString8 = '[8]';
+MatrixLog.dependantPointInString9 = '[9]';
+MatrixLog.dependantPointInStringOften = '[+]';
+
 MatrixLog.pointOutString = ' - ';
+MatrixLog.dependantPointOutString = ' * ';
+MatrixLog.dependantPointOutString2 = ' 2 ';
+MatrixLog.dependantPointOutString3 = ' 3 ';
+MatrixLog.dependantPointOutString4 = ' 4 ';
+MatrixLog.dependantPointOutString5 = ' 5 ';
+MatrixLog.dependantPointOutString6 = ' 6 ';
+MatrixLog.dependantPointOutString7 = ' 7 ';
+MatrixLog.dependantPointOutString8 = ' 8 ';
+MatrixLog.dependantPointOutString9 = ' 9 ';
+MatrixLog.dependantPointOutStringOften = ' + ';
 
 module.exports = MatrixLog;
