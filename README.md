@@ -184,11 +184,14 @@ If you prefer to learn by code rather than have step by step instructions take a
         let filterX = x < filter.length ? 0 : 1;
         filters[filterY][filterX] += weights[y][x];
         matrixLog
-          .at({ x, y })
+          .at({
+            x: filterX,
+            y: filterY
+          })
           .add({
             name: 'weights',
-            x: filterX,
-            y: filterY,
+            x,
+            y,
             width: weights[0].length,
             height: weights.length
           });
