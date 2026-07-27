@@ -1,5 +1,7 @@
 # Matrix Log
 
+[![test](https://github.com/gpujs/matrix-log.js/actions/workflows/test.yml/badge.svg)](https://github.com/gpujs/matrix-log.js/actions/workflows/test.yml)
+
 A matrix log dependency utility. Useful for converting and testing algorithm behavior of CPU code to GPU code.
 
 ## Why?

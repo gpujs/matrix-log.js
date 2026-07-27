@@ -1,0 +1,35 @@
+name: test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 18.x is the floor declared in package.json engines.node
+        node-version: ['18.x', '20.x', '22.x', '24.x']
+    name: node ${{ matrix.node-version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm test
+
+# NOTE: example.js is deliberately not run here. Its final step needs gpu.js,
+# whose `gl` dependency is a native module requiring system GL headers on the
+# runner, which makes the job fail for reasons unrelated to this package.
