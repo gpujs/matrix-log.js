@@ -72,6 +72,44 @@ describe('MatrixLog', () => {
         expect(location.highY).toBe(childY);
         expect(location.points[childZ][childY].indexOf(childX)).toBe(0);
       });
+      it('can add below a child that is wider than it is tall', () => {
+        // regression: highY was previously compared against highX, so a child
+        // whose width exceeded its height never grew its lower bound and threw
+        const matrixLog = new MatrixLog('test-matrix', 1, 1);
+        matrixLog.at({ x: 0, y: 0 })
+          .add({
+            name:'child-matrix',
+            x: 0,
+            y: 3,
+            width: 6,
+            height: 2
+          });
+        const location = matrixLog.locations[0][0][0]['child-matrix'];
+        expect(location.lowY).toBe(0);
+        expect(location.highY).toBe(3);
+        expect(location.lowX).toBe(0);
+        expect(location.highX).toBe(5);
+        expect(location.points[0][3].indexOf(0)).toBe(0);
+      });
+      it('can add repeatedly above a child without losing points', () => {
+        // regression: only the call that extended a bound created its row, so a
+        // second point on an already extended row threw
+        const matrixLog = new MatrixLog('test-matrix', 1, 1);
+        const child = {
+          name:'child-matrix',
+          width: 2,
+          height: 6
+        };
+        matrixLog.at({ x: 0, y: 0 })
+          .add(Object.assign({}, child, { x: 0, y: -3 }))
+          .add(Object.assign({}, child, { x: 1, y: -2 }))
+          .add(Object.assign({}, child, { x: 0, y: -2 }));
+        const location = matrixLog.locations[0][0][0]['child-matrix'];
+        expect(location.lowY).toBe(-3);
+        expect(location.highY).toBe(5);
+        expect(location.points[0][-3]).toEqual([0]);
+        expect(location.points[0][-2]).toEqual([1, 0]);
+      });
     });
     describe('.toString()', () => {
       it('repeats for every point logged', () => {

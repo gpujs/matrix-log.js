@@ -1,5 +1,7 @@
 # Matrix Log
 
+[![test](https://github.com/gpujs/matrix-log.js/actions/workflows/test.yml/badge.svg)](https://github.com/gpujs/matrix-log.js/actions/workflows/test.yml)
+
 A matrix log dependency utility. Useful for converting and testing algorithm behavior of CPU code to GPU code.
 
 ## Why?
@@ -17,9 +19,16 @@ Don't understand?
 2. Think of the Leonardo 2's cannons talking with each other to build up their values and how this violates the laws of physics.
 3. Have eureka moment.
 
+## Installation
+```bash
+npm install matrix-log.js
+```
+
 ## API
 ```js
-import * as MatrixLog from 'matrix-log';
+const MatrixLog = require('matrix-log.js');
+// or, from an ES module:
+// import MatrixLog from 'matrix-log.js';
 
 
 // create a matrix log that will have dependencies called
@@ -152,7 +161,7 @@ If you prefer to learn by code rather than have step by step instructions take a
     for (let y = 0; y < 4; y++) {
       let filterY = y < 2 ? 0 : 1;
       for (let x = 0; x < 4; x++) {
-        let filterX = x < filter.length ? 0 : 1;
+        let filterX = x < 2 ? 0 : 1;
         filters[filterY][filterX] += weights[y][x];
       }
     }
@@ -181,14 +190,17 @@ If you prefer to learn by code rather than have step by step instructions take a
     for (let y = 0; y < 4; y++) {
       let filterY = y < 2 ? 0 : 1;
       for (let x = 0; x < 4; x++) {
-        let filterX = x < filter.length ? 0 : 1;
+        let filterX = x < 2 ? 0 : 1;
         filters[filterY][filterX] += weights[y][x];
         matrixLog
-          .at({ x, y })
+          .at({
+            x: filterX,
+            y: filterY
+          })
           .add({
             name: 'weights',
-            x: filterX,
-            y: filterY,
+            x,
+            y,
             width: weights[0].length,
             height: weights.length
           });
@@ -293,7 +305,7 @@ If you prefer to learn by code rather than have step by step instructions take a
 5. If we use a GPU environment, such as GPU.js, we could then then convert the kernel so that our algorithm actually works for setting the value of `filters` like this:
     
     ```js
-    import GPU from 'gpu.js';
+    import { GPU } from 'gpu.js';
     const gpu = new GPU();
     
     const filterKernel = gpu.createKernel(function(filters, weights) {

@@ -12,7 +12,8 @@ const targetValue = step1CPU();
 assert.deepStrictEqual(step2CPUWithMatrixLog(), targetValue);
 assert.deepStrictEqual(step3GPUStyleLoops(), targetValue);
 assert.deepStrictEqual(step4GPUStyleKernel(), targetValue);
-assert.deepStrictEqual(step5GPUKernel(), targetValue);
+// a gpu.js kernel returns Float32Array rows, so normalise them before comparing
+assert.deepStrictEqual(step5GPUKernel().map(row => Array.from(row)), targetValue);
 
 function step1CPU() {
   const filters = [
@@ -134,7 +135,7 @@ function step5GPUKernel() {
     [0,0],
     [0,0]
   ];
-  const GPU = require('gpu.js');
+  const { GPU } = require('gpu.js');
   const gpu = new GPU();
 
   const filterKernel = gpu.createKernel(function (filters, weights) {

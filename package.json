@@ -4,9 +4,14 @@
   "description": "A matrix log dependency utility. Useful for converting and testing algorithm behavior of CPU code to GPU code.",
   "main": "index.js",
   "scripts": {
-    "test": "jest --env=node"
+    "test": "jest"
   },
-  "files": ["index.js"],
+  "files": [
+    "index.js"
+  ],
+  "engines": {
+    "node": ">=18.14.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gpujs/matrix-log.js.git"
@@ -30,6 +35,6 @@
   },
   "homepage": "https://github.com/gpujs/matrix-log.js#readme",
   "devDependencies": {
-    "jest": "^23.5.0"
+    "jest": "^30.4.2"
   }
 }

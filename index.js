@@ -95,16 +95,19 @@ class MatrixLog {
     // handle negative and positive
     if (y < location.lowY) {
       location.lowY = y;
-      points[z][y] = [];
-    } else if (y > location.highX) {
+    } else if (y > location.highY) {
       location.highY = y;
-      points[z][y] = [];
     }
 
     if (x < location.lowX) {
       location.lowX = x;
     } else if (x > location.highX) {
       location.highX = x;
+    }
+
+    // rows outside the child's declared height are created on demand
+    if (!points[z][y]) {
+      points[z][y] = [];
     }
 
     points[z][y].push(x);
