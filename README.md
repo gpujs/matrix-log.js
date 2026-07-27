@@ -303,7 +303,7 @@ If you prefer to learn by code rather than have step by step instructions take a
 5. If we use a GPU environment, such as GPU.js, we could then then convert the kernel so that our algorithm actually works for setting the value of `filters` like this:
     
     ```js
-    import GPU from 'gpu.js';
+    import { GPU } from 'gpu.js';
     const gpu = new GPU();
     
     const filterKernel = gpu.createKernel(function(filters, weights) {
